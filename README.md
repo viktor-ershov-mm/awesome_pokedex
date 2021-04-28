@@ -1,3 +1,11 @@
+# Pokedex
+
+Frontend project in [React](https://reactjs.org/). Built to showcase data and features from (https://pokeapi.co/).
+
+## # Requirements
+
+- NodeJS(https://nodejs.org/) >= 10.16
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
