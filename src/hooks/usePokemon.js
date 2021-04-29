@@ -11,5 +11,6 @@ export const usePokemon = (offset) => {
     }
     getPokemon();
   }, [offset]);
-  return pokemonData;
+
+  return [pokemonData, setPokemonData];
 };

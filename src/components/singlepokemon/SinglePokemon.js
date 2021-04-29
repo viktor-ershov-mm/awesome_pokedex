@@ -7,10 +7,11 @@ import {
   CardContent,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { toFirstCharUppercase } from "./utils";
+import { toFirstCharUppercase } from "../../utils";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import axios from "axios";
-import "./fonts/PokemonSolid.ttf";
+import CustomImage from "../customimage/CustomImage";
+import "../../fonts/PokemonSolid.ttf";
 
 const SinglePokemon = (props) => {
   const classes = useStyles();
@@ -40,8 +41,12 @@ const SinglePokemon = (props) => {
         <Typography className={classes.heading} variant="h1">
           {toFirstCharUppercase(name)}
         </Typography>
-        <img style={{ width: "300px", height: "300px" }} src={pokemonUrl} />
-
+        <CustomImage
+          imageWidth="300px"
+          imageHeight="300px"
+          imageSrc={pokemonUrl}
+          imageAlt="high-quality-pokemon"
+        />
         <Card className={classes.cardStyle}>
           <CardContent>
             <Typography variant="h3">Pokemon Info</Typography>

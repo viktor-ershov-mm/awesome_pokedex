@@ -1,6 +1,6 @@
 import React from "react";
-import Pokedex from "./Pokedex";
-import SinglePokemon from "./SinglePokemon";
+import Pokedex from "./components/pokedex/Pokedex";
+import SinglePokemon from "./components/singlepokemon/SinglePokemon";
 import { Switch, Route } from "react-router";
 
 function App() {

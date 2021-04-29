@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,24 +13,29 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import Pagination from "@material-ui/lab/Pagination";
-import { toFirstCharUppercase, maxPokemonLimitPage } from "./utils";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { toFirstCharUppercase, maxPokemonLimitPage } from "../../utils";
 import axios from "axios";
-import { usePokemon } from "./hooks/usePokemon";
+import { usePokemon } from "../../hooks/usePokemon";
 
 const Pokedex = (props) => {
   const { history } = props;
   const classes = useStyles();
   const [offset, setOffset] = useState(0);
-  const pokemonData = usePokemon(offset);
+  const [pokemonData, setPokemonData] = usePokemon(offset);
   const [filter, setFilter] = useState("");
   const [types, setTypes] = useState([]);
   const [species, setSpecies] = useState([]);
   const [currentSpecies, setCurrentSpecies] = useState("");
   const [currentType, setCurrentType] = useState("");
+
+  const initialRender = useRef(true);
+  const uniqueCount = useRef("");
 
   const searchHandler = (e) => {
     setFilter(e.target.value);
@@ -50,58 +55,84 @@ const Pokedex = (props) => {
     setOffset(calculatedOffset);
   };
 
-  // useEffect(() => {
-  //   axios.get("https://pokeapi.co/api/v2/type").then((res) => {
-  //     const { data } = res;
-  //     const { results } = data;
-  //     let typesOfPokemon = [];
-  //     results.forEach((type) => {
-  //       typesOfPokemon.push(type.name);
-  //     });
-  //     setTypes(typesOfPokemon);
-  //   });
-  //   axios.get("https://pokeapi.co/api/v2/pokemon-species").then((res) => {
-  //     const { data } = res;
-  //     const { results } = data;
-  //     let speciesOfPokemon = [];
-  //     results.forEach((species) => {
-  //       speciesOfPokemon.push(species.name);
-  //     });
-  //     console.log(speciesOfPokemon);
-  //     setSpecies(speciesOfPokemon);
-  //   });
-  // }, []);
+  useEffect(() => {
+    axios.get("https://pokeapi.co/api/v2/type").then((res) => {
+      const { data } = res;
+      const { results } = data;
+      let typesOfPokemon = [];
+      results.forEach((type) => {
+        typesOfPokemon.push(type.name);
+      });
+      setTypes(typesOfPokemon);
+    });
+    axios.get("https://pokeapi.co/api/v2/pokemon-species").then((res) => {
+      const { data } = res;
+      const { results } = data;
+      let speciesOfPokemon = [];
+      results.forEach((species) => {
+        speciesOfPokemon.push(species.name);
+      });
+      setSpecies(speciesOfPokemon);
+    });
+  }, []);
 
-  // useEffect(() => {
-  //   if (currentType) {
-  //     axios.get(`https://pokeapi.co/api/v2/type/${currentType}`).then((res) => {
-  //       const { data } = res;
-  //       const { results } = data;
-  //       let newPokemonData = {};
-  //       results.forEach((pokemon, index) => {
-  //         newPokemonData[offset + index + 1] = {
-  //           id: offset + index + 1,
-  //           name: pokemon.name,
-  //           sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-  //             offset + index + 1
-  //           }.png`,
-  //         };
-  //       });
-  //       setPokemonData(newPokemonData);
-  //     });
-  //   } else {
-  //     axios.get(`https://pokeapi.co/api/v2/type/${currentType}`).then((res) => {
-  //       const { data } = res;
-  //       const { results } = data;
-  //       let speciesOfPokemon = [];
-  //       results.forEach((species) => {
-  //         speciesOfPokemon.push(species.name);
-  //       });
-  //       console.log(speciesOfPokemon);
-  //       setSpecies(speciesOfPokemon);
-  //     });
-  //   }
-  // }, [currentType, currentSpecies]);
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      if (currentType) {
+        axios
+          .get(`https://pokeapi.co/api/v2/type/${currentType}`)
+          .then((res) => {
+            const { data } = res;
+            const { pokemon } = data;
+            console.log(pokemon);
+            let newPokemonData = {};
+            pokemon.forEach((pokemon, index) => {
+              let pokemonId = String(pokemon.pokemon.url).match(/\d/g);
+              pokemonId = pokemonId.join("").substring(1);
+              if (
+                Object.values(pokemonData).some(
+                  (e) => e.id === Number(pokemonId)
+                )
+              ) {
+                newPokemonData[pokemonId] = {
+                  id: pokemonId,
+                  name: pokemon.pokemon.name,
+                  sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
+                };
+              }
+            });
+            setPokemonData(newPokemonData);
+          });
+      } else {
+        axios
+          .get(`https://pokeapi.co/api/v2/pokemon-species/${currentSpecies}`)
+          .then((res) => {
+            const { data } = res;
+            const { varieties } = data;
+            let newPokemonData = {};
+            varieties.forEach((variety, index) => {
+              let pokemonId = String(variety.pokemon.url).match(/\d/g);
+              pokemonId = pokemonId.join("").substring(1);
+              if (
+                Object.values(pokemonData).some(
+                  (e) => e.id === Number(pokemonId)
+                )
+              ) {
+                newPokemonData[pokemonId] = {
+                  id: pokemonId,
+                  name: variety.pokemon.name,
+                  sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
+                };
+              }
+            });
+            setPokemonData(newPokemonData);
+          });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentType, currentSpecies]);
 
   const getPokemonCard = (pokemonId) => {
     const { id, name, sprite } = pokemonData[pokemonId];
@@ -133,6 +164,7 @@ const Pokedex = (props) => {
               variant="standard"
               onChange={searchHandler}
             />
+            <h1>Count: {}</h1>
           </div>
           <FormControl className={classes.typesStyle}>
             <InputLabel id="demo-simple-select-label">Types</InputLabel>
@@ -251,6 +283,12 @@ const useStyles = makeStyles((theme) => ({
   },
   typesFilter: {
     height: "auto",
+  },
+  backButton: {
+    backgroundImage: "linear-gradient(315deg, #fff000 0%, #ed008c 74%)",
+    fontWeight: "bold",
+    marginTop: "10px",
+    marginLeft: "10px",
   },
 }));
 
