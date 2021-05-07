@@ -19,8 +19,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import Pagination from "@material-ui/lab/Pagination";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowDropUpIcon from "@material-ui/icons/ArrowDropDown";
+import HeightIcon from "@material-ui/icons/Height";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { toFirstCharUppercase, maxPokemonLimitPage } from "../../utils";
 import axios from "axios";
@@ -36,7 +35,8 @@ const Pokedex = (props) => {
   const [species, setSpecies] = useState([]);
   const [currentSpecies, setCurrentSpecies] = useState("");
   const [currentType, setCurrentType] = useState("");
-  const [orderBy, setOrderBy] = useState("Name");
+  const [orderByName, setOrderByName] = useState(true);
+  const [orderByNumber, setOrderByNumber] = useState(true);
 
   const initialRender = useRef(true);
   const uniqueCount = useRef("");
@@ -59,8 +59,12 @@ const Pokedex = (props) => {
     setOffset(calculatedOffset);
   };
 
-  const orderByHandler = (e, child) => {
-    setOrderBy(child.props.value);
+  const orderByNameHandler = () => {
+    setOrderByName((oldValue) => !oldValue);
+  };
+
+  const orderByNumberHandler = () => {
+    setOrderByNumber((oldValue) => !oldValue);
   };
 
   useEffect(() => {
@@ -142,6 +146,30 @@ const Pokedex = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentType, currentSpecies]);
 
+  useEffect(() => {
+    if (orderByName) {
+      setPokemonData((pokemonData) =>
+        pokemonData.slice().sort((a, b) => (a.name > b.name ? 1 : -1))
+      );
+    } else {
+      setPokemonData((pokemonData) =>
+        pokemonData.slice().sort((a, b) => (a.name < b.name ? 1 : -1))
+      );
+    }
+  }, [orderByName, setPokemonData]);
+
+  useEffect(() => {
+    if (orderByNumber) {
+      setPokemonData((pokemonData) =>
+        pokemonData.slice().sort((a, b) => (a.id > b.id ? 1 : -1))
+      );
+    } else {
+      setPokemonData((pokemonData) =>
+        pokemonData.slice().sort((a, b) => (a.id < b.id ? 1 : -1))
+      );
+    }
+  }, [orderByNumber, setPokemonData]);
+
   const getPokemonCard = (pokemonId) => {
     const { id, name, sprite } = pokemonData[pokemonId];
     return (
@@ -172,7 +200,7 @@ const Pokedex = (props) => {
               variant="standard"
               onChange={searchHandler}
             />
-            <h1>Count: {}</h1>
+            {/* <h1>Count: {}</h1> */}
           </div>
           <FormControl className={classes.typesStyle}>
             <InputLabel id="demo-simple-select-label">Types</InputLabel>
@@ -216,28 +244,13 @@ const Pokedex = (props) => {
           count={maxPokemonLimitPage}
           onChange={paginationHandler}
         />
-        <p className={classes.orderByText}>Order by: </p>
-        <FormControl className={classes.typesStyle}>
-          {/* <InputLabel id="demo-simple-select-label">Order by</InputLabel> */}
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            onChange={orderByHandler}
-            value={"None"}
-          >
-            <MenuItem key={1} value={"Name"}>
-              Name
-            </MenuItem>
-            <MenuItem key={2} value={"Number"}>
-              Number
-            </MenuItem>
-          </Select>
-        </FormControl>
-        <Button>
-          <ArrowDropDownIcon />
+        <Button onClick={orderByNameHandler}>
+          Name
+          <HeightIcon />
         </Button>
-        <Button>
-          <ArrowDropUpIcon />
+        <Button onClick={orderByNumberHandler}>
+          Number
+          <HeightIcon />
         </Button>
       </div>
       {pokemonData ? (

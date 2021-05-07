@@ -5,7 +5,7 @@ const populatePokedex = (offset) =>
   axios.get(`${BASE_URL}/pokemon?offset=${offset}&limit=50`).then((res) => {
     const { data } = res;
     const { results } = data;
-    let newPokemonData = {};
+    let newPokemonData = [];
     results.forEach((pokemon, index) => {
       newPokemonData[offset + index + 1] = {
         id: offset + index + 1,
