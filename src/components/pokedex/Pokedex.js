@@ -14,10 +14,13 @@ import {
   Select,
   MenuItem,
   Button,
+  Table,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import Pagination from "@material-ui/lab/Pagination";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropUp";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { toFirstCharUppercase, maxPokemonLimitPage } from "../../utils";
 import axios from "axios";
@@ -33,6 +36,7 @@ const Pokedex = (props) => {
   const [species, setSpecies] = useState([]);
   const [currentSpecies, setCurrentSpecies] = useState("");
   const [currentType, setCurrentType] = useState("");
+  const [orderBy, setOrderBy] = useState("Name");
 
   const initialRender = useRef(true);
   const uniqueCount = useRef("");
@@ -53,6 +57,10 @@ const Pokedex = (props) => {
   const paginationHandler = (e, page) => {
     const calculatedOffset = (page - 1) * 50;
     setOffset(calculatedOffset);
+  };
+
+  const orderByHandler = (e, child) => {
+    setOrderBy(child.props.value);
   };
 
   useEffect(() => {
@@ -208,6 +216,29 @@ const Pokedex = (props) => {
           count={maxPokemonLimitPage}
           onChange={paginationHandler}
         />
+        <p className={classes.orderByText}>Order by: </p>
+        <FormControl className={classes.typesStyle}>
+          {/* <InputLabel id="demo-simple-select-label">Order by</InputLabel> */}
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            onChange={orderByHandler}
+            value={"None"}
+          >
+            <MenuItem key={1} value={"Name"}>
+              Name
+            </MenuItem>
+            <MenuItem key={2} value={"Number"}>
+              Number
+            </MenuItem>
+          </Select>
+        </FormControl>
+        <Button>
+          <ArrowDropDownIcon />
+        </Button>
+        <Button>
+          <ArrowDropUpIcon />
+        </Button>
       </div>
       {pokemonData ? (
         <div>
@@ -289,6 +320,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     marginTop: "10px",
     marginLeft: "10px",
+  },
+  orderByText: {
+    // display: "inline-block",
+    // verticalAlign: "middle",
+    // lineHeight: "normal",
+    textAlign: "center",
   },
 }));
 
