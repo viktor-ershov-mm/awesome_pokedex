@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/viktor-ershov-mm/awesome_pokedex.svg?branch=master)](https://travis-ci.org/viktor-ershov-mm/awesome_pokedex)
+
 # Pokedex
 
 Frontend project in [React](https://reactjs.org/). Built to showcase data and features from (https://pokeapi.co/).
