@@ -9,7 +9,6 @@ export const usePokemon = (offset, type, species) => {
       let pokeData;
       if (type) {
         pokeData = await APIService.getCurrentType(offset, type);
-        console.log(pokeData);
       } else if (species) {
         pokeData = await APIService.getCurrentSpecies(offset, species);
       } else {

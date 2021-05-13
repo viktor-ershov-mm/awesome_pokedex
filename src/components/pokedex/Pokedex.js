@@ -187,19 +187,11 @@ const Pokedex = (props) => {
         </Toolbar>
       </AppBar>
       <div className={classes.paginationWrapper}>
-        {pokemonData ? (
-          <Pagination
-            className={classes.pagination}
-            count={maxPokemonLimitPage}
-            onChange={paginationHandler}
-          />
-        ) : (
-          <Pagination
-            className={classes.pagination}
-            count={0}
-            onChange={paginationHandler}
-          />
-        )}
+        <Pagination
+          className={classes.pagination}
+          count={maxPokemonLimitPage}
+          onChange={paginationHandler}
+        />
         <Button onClick={orderByNameHandler}>
           Name
           <HeightIcon />
