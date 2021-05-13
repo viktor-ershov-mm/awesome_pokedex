@@ -4,5 +4,5 @@ node_js:
   - "14"
 
 script:
-  - npm test
+  - npm test -- --watchAll=false
   - npm run build
