@@ -45,11 +45,7 @@ const Pokedex = (props) => {
   };
 
   const typesHandler = (e, child) => {
-    alert(child.props.value);
-    setCurrentType((oldType) => {
-      alert(oldType);
-      return child.props.value;
-    });
+    setCurrentType(child.props.value);
   };
 
   const speciesHandler = (e, child) => {

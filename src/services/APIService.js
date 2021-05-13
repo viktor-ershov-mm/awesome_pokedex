@@ -31,9 +31,6 @@ const getAllSpecies = () => {
 };
 
 const getCurrentType = (offset, currentType) => {
-  console.log(
-    `${BASE_URL}/api/v2/type/${currentType}?offset=${offset}&limit=50`
-  );
   return axios
     .get(`${BASE_URL}/type/${currentType}?offset=${offset}&limit=50`)
     .then((res) => {
@@ -54,9 +51,6 @@ const getCurrentType = (offset, currentType) => {
 };
 
 const getCurrentSpecies = (offset, currentSpecies) => {
-  console.log(
-    `${BASE_URL}/api/v2/pokemon-species/${currentSpecies}?offset=${offset}&limit=50`
-  );
   return axios
     .get(
       `${BASE_URL}/pokemon-species/${currentSpecies}?offset=${offset}&limit=50`
@@ -65,7 +59,7 @@ const getCurrentSpecies = (offset, currentSpecies) => {
       let newPokemonData = [];
       const { data } = res;
       const { varieties } = data;
-      varieties.forEach((pokemon, index) => {
+      varieties.forEach((pokemon) => {
         let pokemonId = String(pokemon.pokemon.url).match(/\d/g);
         pokemonId = pokemonId.join("").substring(1);
         newPokemonData[pokemonId] = {
@@ -77,9 +71,6 @@ const getCurrentSpecies = (offset, currentSpecies) => {
       return newPokemonData;
     });
 };
-// const getCurrentSpecies = (offset, currentSpecies) => {
-//   axios.get(`${BASE_URL}/api/v2/pokemon-species/${currentSpecies}`);
-// };
 
 export const APIService = {
   populatePokedex,
