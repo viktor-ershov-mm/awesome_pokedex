@@ -1,15 +1,15 @@
-import Pokedex from "./components/pokedex/Pokedex";
-import SinglePokemon from "./components/singlepokemon/SinglePokemon";
+import Pokedex from "../pokedex/Pokedex";
+import SinglePokemon from "../singlepokemon/SinglePokemon";
 import React from "react";
-import App from "./App";
+import App from "../../App";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import "@testing-library/jest-dom/extend-expect";
 import { createMemoryHistory } from "history";
 import { Router } from "react-router-dom";
 
-jest.mock("./components/pokedex/Pokedex");
-jest.mock("./components/singlepokemon/SinglePokemon");
+jest.mock("../pokedex/Pokedex");
+jest.mock("../singlepokemon/SinglePokemon");
 
 describe("Tests for App Router", () => {
   test("Should render HomePage on default route", () => {
@@ -43,13 +43,11 @@ describe("Tests for App Router", () => {
   });
 });
 
-// describe("Integration tests", () => {
-//   test("Smththth", async () => {
-//     const history = createMemoryHistory();
-//     render(
-//       <MemoryRouter history={history}>
-//         <App />
-//       </MemoryRouter>
-//     );
-//   });
+// test("Smththth", async () => {
+//   const history = createMemoryHistory();
+//   render(
+//     <MemoryRouter history={history}>
+//       <App />
+//     </MemoryRouter>
+//   );
 // });

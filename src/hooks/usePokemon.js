@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { APIService } from "../services/APIService";
 
-export const usePokemon = (offset) => {
+export const usePokemon = (offset, type, species) => {
   const [pokemonData, setPokemonData] = useState([]);
 
   useEffect(() => {
     async function getPokemon() {
-      let pokeData = await APIService.populatePokedex(offset);
-      console.log(pokeData);
+      let pokeData;
+      if (type) {
+        pokeData = await APIService.getCurrentType(offset, type);
+        console.log(pokeData);
+      } else if (species) {
+        pokeData = await APIService.getCurrentSpecies(offset, species);
+      } else {
+        pokeData = await APIService.populatePokedex(offset);
+      }
+
       setPokemonData(pokeData);
     }
     getPokemon();
-  }, [offset]);
+  }, [offset, type, species]);
 
   return [pokemonData, setPokemonData];
 };

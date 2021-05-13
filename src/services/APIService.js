@@ -30,13 +30,56 @@ const getAllSpecies = () => {
   axios.get(`https://pokeapi.co/api/v2/pokemon-species`);
 };
 
-const getCurrentType = (currentType) => {
-  axios.get(`https://pokeapi.co/api/v2/type/${currentType}`);
+const getCurrentType = (offset, currentType) => {
+  console.log(
+    `${BASE_URL}/api/v2/type/${currentType}?offset=${offset}&limit=50`
+  );
+  return axios
+    .get(`${BASE_URL}/type/${currentType}?offset=${offset}&limit=50`)
+    .then((res) => {
+      let newPokemonData = [];
+      const { data } = res;
+      const { pokemon } = data;
+      pokemon.forEach((pokemon, index) => {
+        let pokemonId = String(pokemon.pokemon.url).match(/\d/g);
+        pokemonId = pokemonId.join("").substring(1);
+        newPokemonData[pokemonId] = {
+          id: pokemonId,
+          name: pokemon.pokemon.name,
+          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
+        };
+      });
+      return newPokemonData;
+    });
 };
 
-const getCurrentSpecies = (currentSpecies) => {
-  axios.get(`https://pokeapi.co/api/v2/pokemon-species/${currentSpecies}`);
+const getCurrentSpecies = (offset, currentSpecies) => {
+  console.log(
+    `${BASE_URL}/api/v2/pokemon-species/${currentSpecies}?offset=${offset}&limit=50`
+  );
+  return axios
+    .get(
+      `${BASE_URL}/pokemon-species/${currentSpecies}?offset=${offset}&limit=50`
+    )
+    .then((res) => {
+      let newPokemonData = [];
+      const { data } = res;
+      const { varieties } = data;
+      varieties.forEach((pokemon, index) => {
+        let pokemonId = String(pokemon.pokemon.url).match(/\d/g);
+        pokemonId = pokemonId.join("").substring(1);
+        newPokemonData[pokemonId] = {
+          id: pokemonId,
+          name: pokemon.pokemon.name,
+          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
+        };
+      });
+      return newPokemonData;
+    });
 };
+// const getCurrentSpecies = (offset, currentSpecies) => {
+//   axios.get(`${BASE_URL}/api/v2/pokemon-species/${currentSpecies}`);
+// };
 
 export const APIService = {
   populatePokedex,

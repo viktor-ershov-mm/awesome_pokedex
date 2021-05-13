@@ -14,13 +14,11 @@ import {
   Select,
   MenuItem,
   Button,
-  Table,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import Pagination from "@material-ui/lab/Pagination";
 import HeightIcon from "@material-ui/icons/Height";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { toFirstCharUppercase, maxPokemonLimitPage } from "../../utils";
 import axios from "axios";
 import { usePokemon } from "../../hooks/usePokemon";
@@ -29,24 +27,29 @@ const Pokedex = (props) => {
   const { history } = props;
   const classes = useStyles();
   const [offset, setOffset] = useState(0);
-  const [pokemonData, setPokemonData] = usePokemon(offset);
   const [filter, setFilter] = useState("");
   const [types, setTypes] = useState([]);
   const [species, setSpecies] = useState([]);
   const [currentSpecies, setCurrentSpecies] = useState("");
   const [currentType, setCurrentType] = useState("");
+  const [pokemonData, setPokemonData] = usePokemon(
+    offset,
+    currentType,
+    currentSpecies
+  );
   const [orderByName, setOrderByName] = useState(true);
   const [orderByNumber, setOrderByNumber] = useState(true);
-
-  const initialRender = useRef(true);
-  const uniqueCount = useRef("");
 
   const searchHandler = (e) => {
     setFilter(e.target.value);
   };
 
   const typesHandler = (e, child) => {
-    setCurrentType(child.props.value);
+    alert(child.props.value);
+    setCurrentType((oldType) => {
+      alert(oldType);
+      return child.props.value;
+    });
   };
 
   const speciesHandler = (e, child) => {
@@ -65,6 +68,14 @@ const Pokedex = (props) => {
 
   const orderByNumberHandler = () => {
     setOrderByNumber((oldValue) => !oldValue);
+  };
+
+  const resetHandler = () => {
+    setFilter("");
+    setCurrentSpecies("");
+    setCurrentType("");
+    setOrderByName(true);
+    setOrderByNumber(true);
   };
 
   useEffect(() => {
@@ -87,64 +98,6 @@ const Pokedex = (props) => {
       setSpecies(speciesOfPokemon);
     });
   }, []);
-
-  useEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false;
-    } else {
-      if (currentType) {
-        axios
-          .get(`https://pokeapi.co/api/v2/type/${currentType}`)
-          .then((res) => {
-            const { data } = res;
-            const { pokemon } = data;
-            console.log(pokemon);
-            let newPokemonData = {};
-            pokemon.forEach((pokemon, index) => {
-              let pokemonId = String(pokemon.pokemon.url).match(/\d/g);
-              pokemonId = pokemonId.join("").substring(1);
-              if (
-                Object.values(pokemonData).some(
-                  (e) => e.id === Number(pokemonId)
-                )
-              ) {
-                newPokemonData[pokemonId] = {
-                  id: pokemonId,
-                  name: pokemon.pokemon.name,
-                  sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
-                };
-              }
-            });
-            setPokemonData(newPokemonData);
-          });
-      } else {
-        axios
-          .get(`https://pokeapi.co/api/v2/pokemon-species/${currentSpecies}`)
-          .then((res) => {
-            const { data } = res;
-            const { varieties } = data;
-            let newPokemonData = {};
-            varieties.forEach((variety, index) => {
-              let pokemonId = String(variety.pokemon.url).match(/\d/g);
-              pokemonId = pokemonId.join("").substring(1);
-              if (
-                Object.values(pokemonData).some(
-                  (e) => e.id === Number(pokemonId)
-                )
-              ) {
-                newPokemonData[pokemonId] = {
-                  id: pokemonId,
-                  name: variety.pokemon.name,
-                  sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
-                };
-              }
-            });
-            setPokemonData(newPokemonData);
-          });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentType, currentSpecies]);
 
   useEffect(() => {
     if (orderByName) {
@@ -200,7 +153,6 @@ const Pokedex = (props) => {
               variant="standard"
               onChange={searchHandler}
             />
-            {/* <h1>Count: {}</h1> */}
           </div>
           <FormControl className={classes.typesStyle}>
             <InputLabel id="demo-simple-select-label">Types</InputLabel>
@@ -239,11 +191,19 @@ const Pokedex = (props) => {
         </Toolbar>
       </AppBar>
       <div className={classes.paginationWrapper}>
-        <Pagination
-          className={classes.pagination}
-          count={maxPokemonLimitPage}
-          onChange={paginationHandler}
-        />
+        {pokemonData ? (
+          <Pagination
+            className={classes.pagination}
+            count={maxPokemonLimitPage}
+            onChange={paginationHandler}
+          />
+        ) : (
+          <Pagination
+            className={classes.pagination}
+            count={0}
+            onChange={paginationHandler}
+          />
+        )}
         <Button onClick={orderByNameHandler}>
           Name
           <HeightIcon />
@@ -251,6 +211,9 @@ const Pokedex = (props) => {
         <Button onClick={orderByNumberHandler}>
           Number
           <HeightIcon />
+        </Button>
+        <Button className={classes.resetButton} onClick={resetHandler}>
+          Reset
         </Button>
       </div>
       {pokemonData ? (
@@ -335,10 +298,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
   },
   orderByText: {
-    // display: "inline-block",
-    // verticalAlign: "middle",
-    // lineHeight: "normal",
     textAlign: "center",
+  },
+  resetButton: {
+    backgroundColor: "red",
   },
 }));
 
